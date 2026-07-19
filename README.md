@@ -13,13 +13,13 @@ Universe is a single-JAR orchestrator for running and managing application insta
 
 - Asks for an install directory.
 - Clones `github.com/universeclouddev/universe` into `<install directory>/source`.
-- Lets you choose a branch or tag.
+- Defaults to the upstream `production` branch, with an option to select and validate another branch or tag.
 - Lets you choose optional Universe extensions.
 - Lets you choose compile or pre-compiled mode.
 - Builds from source with Gradle.
 - Creates a runtime directory at `<install directory>/runtime`.
 - Creates starter `config.json` and `database.json` files when they do not already exist.
-- Copies built JAR files into `<install directory>/runtime/jars`.
+- Copies loader, app, and API JARs into `<install directory>/runtime/jars`, and optional extension JARs into `<install directory>/runtime/extensions`.
 
 Pre-compiled installs are shown in the installer, but they are not available yet. Choosing that option currently falls back to source compilation.
 
@@ -62,7 +62,7 @@ If you keep the default install path, the result looks like this:
 
 ## Extensions
 
-The installer can build selected extension modules from the Universe source tree. Available choices include Docker, Kubernetes, S3 storage, database providers, metrics providers, GitOps, ArgoCD, Discord, and Tailscale.
+The installer can build selected extension modules from the Universe source tree. Available choices include Docker, Kubernetes, S3 storage, database providers, metrics providers, GitOps, ArgoCD, Discord, and Tailscale. Extension JARs are copied to `runtime/extensions`, which is the directory Universe scans at startup; they are deliberately copied rather than symlinked so the runtime remains usable if the source checkout is moved, cleaned, or rebuilt.
 
 Only select extensions that you plan to use. This keeps the build smaller and easier to understand.
 
@@ -99,7 +99,7 @@ Edit this file before production use, especially when running multiple nodes.
 
 ## Updating
 
-Run the installer again and choose the same install directory. If `source/` already exists, the installer asks whether it should update the repository with `git pull --ff-only`.
+Run the installer again and choose the same install directory. If a prior installation (or a source checkout) is found, the installer asks whether to update the source with `git pull --ff-only`. Choosing **no** preserves the checked-out revision: the installer does not fetch, check out another branch, or pull, and builds that existing revision instead.
 
 ## Notes
 
